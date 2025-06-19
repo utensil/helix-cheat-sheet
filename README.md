@@ -10,12 +10,13 @@ The idea is to first work out a _mini_ version that covers essentials, then poss
 
 ## Style choice
 
-- 👀 discoverable: easy to notice or search for frequently wondered stuff
-- 🎨 consistently colorful: use colors to distinguish concepts
-- 💡 memorable keystrokes: try to relate keystrokes to meaning
-- 🧭 spatially intuitive: visualize which direction it goes
-- ✂️ concise: short words and descriptions(prefer verb, no articles for nouns), internally link to elaboration
-- 📦 self-contained: assumes less of audience
+- 👀 **discoverable** - easy to notice or search for frequently wondered stuff
+- 🎨 **consistently colorful** - use colors to distinguish concepts
+- 💡 **memorable keystrokes** - try to relate keystrokes to meaning
+- 🧭 **spatially intuitive** - visualize directions
+- ✂️ **concise** - short words and descriptions (prefer verb, no articles for nouns)
+- 🔗 **explorable** - quick mention where fit, then internally linked to elaboration
+- 📦 **self-contained** - assumes less of audience
 
 ## Credits
 
