@@ -41,7 +41,7 @@
 
 #show: cram-snap.with(
   title: [*Helix Cheat Sheet*],
-  subtitle: [mini v0.1], // A Post-Modern Text Editor
+  subtitle: [mini v0.3], // A Post-Modern Text Editor
   icon: image("helix-logo.svg"),
   column-number: 4,
   // fill-color: rgb("#947cc3").lighten(85%)  // helix brand color: blue 99dbe8 purple 947cc3
@@ -97,6 +97,10 @@
 #let cmd(content)=[#mode[:]#content]
 #let needlsp=text(fill: green)[●]
 #let needtree=text(fill: maroon)[●]
+#let fn-shift=text(fill: gray)[●]
+#let fn-replace=text(fill: gray)[●]
+#let fn-hjkl=text(fill: gray)[●]
+#let fn(content)=super(size: 1em, content)
 
 #layout(size => [
   #set align(center)
@@ -133,7 +137,7 @@
       ]
   
       e.g. #strong[#mode[v]#cnt[3]#sel[w]#op[d]] will make #cnt[3] #sel[#strong[w]ords] #op[#strong[d]eleted]\
-      No more #op[dd], #op[yy], see their counterparts#footnote[TODO] in Helix
+      No more #op[dd], #op[yy], see their #link(<counterparts>)[counterparts] in Helix
     ]
   )
   
@@ -158,7 +162,8 @@
     ..keyrow(
       [#mode[v]],
       [
-        *select (extend)* mode - like Vim's #mode[*v*]isual mode\ see also in #link(<v-mode>)[#mov[Move]/#sel[Select]]
+        *select (extend)* mode - like Vim's #mode[*v*]isual mode\
+        #hint[see also in #link(<v-mode>)[#mov[Move]/#sel[Select]]]
       ],
       colspans: longdef
     ),
@@ -179,15 +184,15 @@
     //   [*sticky view* mode]
     // ),
     ..keyrow(
-      [#mode[⌃w]],
-      [*window* mode ( #mode[␣w] works too )]
+      [#mode[⌃w\ #mode[␣w]]],
+      [*window* mode]
     ),
   )
 
 
   #table(
-    theader[Pickers],
-    ..keyrow([#mode[␣]f\ #hint[␣F]], [open *file* picker (in workspace)\ #hint[open *file* picker (in current working directory)]], colspans: longdef),
+    theader[Pick],
+    ..keyrow([#mode[␣]f\ #hint[␣F]], [open *file* picker (in workspace)\ #hint[open *file* picker (in current directory)]], colspans: longdef),
     ..keyrow([#mode[␣]/], [open full-text *search* picker (in workspace)], colspans: longdef),
     ..keyrow([#mode[␣]b], [open *buﬀer* #hint[(tab)] picker], colspans: longdef),
     ..keyrow([#mode[␣]j], [open *jump* picker], colspans: longdef),
@@ -195,7 +200,16 @@
     ..keyrow([#mode[␣]?], [open *command* palette], colspans: longdef),
   )
 
-  #needlsp requires an active language server for the file
+  #table(
+    theader[Search & replace <replace>],
+    ..keyrow([/#hint[\<regex\>]↵\ #hint[?\<regex\>↵]], [search for #hint[\<regex\>] in current buffer (forward/#hint[backward])], colspans: evendef, align: (center, left)),
+    ..keyrow([N], [prev match]),
+    ..keyrow([n], [#strong[n]ext match]),
+    ..keyrow([\*], [search for current #sel[selection]\ #hint[(e.g. \*n for next match)]], colspans: evendef, align: (center, left)),
+    ..keyrow([s#hint[\<regex\>]↵c#hint[\<replacement\>]], [replace #hint[\<regex\>] with #hint[\<replacement\>] in #sel[selection] #fn[#fn-replace] \ #hint[(e.g. % to select the whole file)]], colspans: evendef, align: (center, left)),
+  )
+
+  #fn-replace see #link(<multicursor>)[Multi-cursor #sel[#strong[s]elect]] in and #op[c]hange in #link(<operate>)[Operate].
 
   #table(
     theader[Look around],
@@ -203,8 +217,8 @@
     ..keyrow([#mode[g]n], [#mode[g]oto #strong[n]ext buffer #hint[(tab)]]),
     ..keyrow([#mode[g]f], [#mode[g]oto #strong[f]ile under cursor]),
     ..keyrow([#mode[g]d], [#mode[g]oto #strong[d]efinition #needlsp]),
-    ..keyrow([^o], [zoom #strong[o]ut\ #hint[(jump backward)]]),
-    ..keyrow([^i], [zoom #strong[i]n\ #hint[(jump forward)]]),
+    ..keyrow([^o], [jump #strong[o]ut #hint[(backward)]]),
+    ..keyrow([^i], [jump #strong[i]n #hint[(forward)]]),
   )
 
   #table(
@@ -214,18 +228,10 @@
     ..keyrow([<], [unindent]),
     ..keyrow([>], [indent]),
     ..keyrow([^c], [toggle *comment*]),
+    ..keyrow([C], [vertical #link(<multicursor>)[multi-cursor]]),
   )
 
-  #table(
-    theader[Special key],
-    ..keyrow([⎋], [escape]),
-    ..keyrow([⌥], [option #hint[or] Alt]),
-    ..keyrow([^], [control]),
-    ..keyrow([⌘], [command]),
-    ..keyrow([␣], [space]),
-    ..keyrow([⇧], [shift#footnote[We don't use shift but its result, e.g. `⇧w` becomes `W`, `⇧/` becomes `?`]])
-  )
-  
+  #needlsp requires an active language server for the file, see #link(<lsp>)[LSP].
 ]
 ])
 
@@ -250,7 +256,7 @@
   ), 
   ..keyrow(
     sel[,],
-    [escape from *#link(<multicursor>)[multi cursor] #sel[selection]*\ (i.e. keep only primary selection)],
+    [escape from *#link(<multicursor>)[multi-cursor #sel[selection]]*\ (i.e. keep only primary selection)],
     colspans: longdef,
     align: (center, left)
   ),
@@ -319,12 +325,13 @@
       ),
       
       node((0,0))[
-        #pin("H")#kbd("H")#pin("J")#kbd("J")#pin("K")#kbd("K")#pin("L")#kbd("L")
-        #text(size: 4em)[ ]#footnote[#link("https://en.wikipedia.org/wiki/Arrow_keys#HJKL_keys")[HJKL keys] on the home row of keyboard]
+        #pin("H")#kbd("H")#pin("J")#kbd("J")#pin("K")#kbd("K")#pin("L")#kbd("L")#fn[#fn-hjkl]<move>
       ]
     )
   ]
 )
+
+#fn-hjkl #link("https://en.wikipedia.org/wiki/Arrow_keys#HJKL_keys")[HJKL keys] on the home row of keyboard
 
 #pinit-highlight("cursor-begin", "cursor-end")
 #pinit-highlight("select-begin", "select-end")
@@ -335,7 +342,7 @@
 #pinit-arrow("L", "l", start-dx: 25pt, start-dy: -5pt, end-dx: -5pt, end-dy: 9pt)
 
 #table(
-  theader(colspan: 4)[#op[Operate] - enter *#mode[insert] mode* to edit],
+  theader(colspan: 4)[#op[Operate] - enter *#mode[insert] mode* to edit <operate>],
   herorow[In Helix, insert point is relative to #sel[selection], not cursor.],
   herorow[
     #diagram(
@@ -354,12 +361,13 @@
           ([#op[A]], [#op[a]ppend to end of\ line]),
       ),
       node((0,0))[
-        #stack(dir: ttb, spacing: 1%,
-          stack(dir: ltr, spacing: 1%,
+        #stack(dir: ltr, spacing: 1%,
+          keydef([#op[r]], [replace character], dir: ltr),
+          stack(dir: ttb, spacing: 1%,
             keydef([#op[c]], [#hint[yank and]\ #op[c]hange selection], dir: ltr),
             keydef([#hint[⌥c]], [#hint[no yanking]], dir: ltr),
           ),
-          stack(dir: ltr, spacing: 1%,
+          stack(dir: ttb, spacing: 1%,
             keydef([#op[d]], [#hint[yank and]\ #op[d]elete selection], dir: ltr),
             keydef([#hint[⌥d]], [#hint[no yanking]], dir: ltr),
             // keydef([#hint[⌥]], [#hint[without yanking]], dir: ltr),
@@ -376,6 +384,7 @@
   ..keyrow([#op[p]\ #op[#hint[P]]], [*#op[p]aste* after/#hint[before] selection]),
   ..keyrow([#mode[␣]#op[y]\ #op[#hint[␣Y]]], [*#op[y]ank* selections/#hint[primary selction] to clipboard]),
   ..keyrow([#mode[␣]#op[p]\ #op[#hint[␣P]]], [*paste* from clipboard\ after/#hint[before] selection]),
+  ..keyrow([#op[R]\ #hint[␣R]], [#strong[r]eplace selections by yanked/#hint[clipboard] contents], colspans: longdef),
 )
 
 #colbreak()
@@ -430,17 +439,71 @@
         colspans: evendef,
       ),
     )
+
+    #table(
+      theader(colspan: 4)[Multi-cursor #sel[select]<multicursor>],
+      ..keyrow(
+        [C\ #hint[⌥C]],
+        [copy selection onto next/#hint[prev] line #hint[(repeatable)]\ #hint[a.k.a *vertical selection* or *block selection*]],
+        colspans: longdef,
+        align: (center, left)
+      ),
+      ..keyrow(
+        [#mode[v]\ #sel[w]...],
+        [*extend* all selections towards the next #link(<move>)[#mov[move]]],
+        colspans: longdef,
+        align: (center, left)
+      ), 
+      ..keyrow(
+        sel[,],
+        [escape from *multi-cursor #sel[selection]*\ (i.e. keep only primary selection)],
+        colspans: longdef,
+        align: (center, left)
+      ),
+      ..keyrow([s#hint[\<regex\>]↵], [#strong[s]elect all #hint[\<regex\>] matches inside selections\ #hint[(useful in #link(<replace>)[Search & replace])]], colspans: evendef, align: (center, left)),
+      ..keyrow([S#hint[\<regex\>]↵], [#strong[s]plit selection on #hint[\<regex\>] matches], colspans: evendef, align: (center, left)),
+    )
+
+    #table(
+      theader(colspan: 4)[Multi-cursor #op[operate]],
+      ..keyrow([#op[c] #op[d] #op[i] #op[a] #op[o] #op[O] #op[R] ... ], [same as in #link(<operate>)[#op[Operate]]], colspans: evendef),
+      ..keyrow([&], [align selection in columns], colspans: evendef),
+    )
   ]
 ])
 
+#colbreak()
 
 // TODO
 
 <register>
 
-#colbreak()
+#table(
+  theader(colspan: 4)[Register],
+)
 
-<multicursor>
+<counterparts>
+
+#table(
+  theader(colspan: 4)[Counterparts],
+)
+
+<lsp>
+
+#table(
+  theader(colspan: 4)[LSP],
+)
+
+#table(
+  theader[Special key],
+  ..keyrow([⎋], [escape]),
+  ..keyrow([⌥], [option #hint[or] Alt]),
+  ..keyrow([^], [control]),
+  ..keyrow([⌘], [command]),
+  ..keyrow([⇧], [shift #hint[( `⇧w` = `W`, `⇧/` = `?`... )]], colspans: longdef),
+  ..keyrow([␣], [space]),
+  ..keyrow([↵], [enter]),
+)
 
 #layout(size => [
   #set align(right)
@@ -448,7 +511,7 @@
   #set align(center)
   #set text(fill: gray)
   Helix Cheat Sheet v0.1\
-  Typst source: #link("")[mini] / #link("")[full] \
+  Typst source: #link("https://github.com/utensil/helix-cheat-sheet/blob/main/mini.typ")[mini] / #link("https://github.com/utensil/helix-cheat-sheet")[full] \
   Utensil Song 2025-06-20\
   Helix 25.01.1 (e7ac2fcd)\
   #text(size: 6em)[#cc-by-sa-badge]\
