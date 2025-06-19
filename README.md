@@ -6,7 +6,7 @@ A cheat sheet for [Helix editor](https://helix-editor.com/), authored in [Typst]
 
 WIP, see [here](https://github.com/utensil/helix-cheat-sheet/issues/1) for screenshot and rendered PDF.
 
-The idea is to first work out a _mini_ version, which covers essentials, then possibly a _full_ version that covers more than I need personally.
+The idea is to first work out a _mini_ version that covers essentials, then possibly a _full_ version that covers more than I need personally.
 
 ## Style choice
 
