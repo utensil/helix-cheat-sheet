@@ -63,6 +63,8 @@
 
 #let shortdef = (1, 1)
 #let longdef = (1, 3)
+#let evendef = (2, 2)
+
 #let keyrow(key, def, colspans: shortdef, align: (left, left))=(
   return (
     cell(colspan: colspans.first(), align: align.first(), strong(key)),
@@ -93,6 +95,8 @@
 #let sem(it) = strong(text(it, fill: orange))
 #let pair(it) = strong(text(it, fill: yellow.darken(40%)))
 #let cmd(content)=[#mode[:]#content]
+#let needlsp=text(fill: green)[●]
+#let needtree=text(fill: maroon)[●]
 
 #layout(size => [
   #set align(center)
@@ -101,22 +105,16 @@
   #table(
     theader[Basic],
     ..keyrow([Install], [ #link("https://docs.helix-editor.com/package-managers.html")[with package managers] or #link("https://docs.helix-editor.com/building-from-source.html")[from source]], colspans: (1, 3)),
-    ..keyrow([#hint("$") *hx*], [open current directory in Helix], colspans: (2, 2)),
-    ..keyrow([#hint("$") *hx* #arg[file]], [open #arg[file] in Helix], colspans: (2, 2)),
+    ..keyrow([#hint("$") *hx*], [open current directory in Helix], colspans: evendef),
+    ..keyrow([#hint("$") *hx* #arg[file]], [open #arg[file] in Helix], colspans: evendef),
+    herorow[#hint[buffer = opened file, shown as *tabs*]],
+    ..keyrow(cmd[n#hint("ew")], [create a #strong[n]ew buffer]),
+    ..keyrow(cmd[w#hint("rite")], [#strong[w]rite/save buffer\ to disk]),
+    ..keyrow(cmd[bc#hint("lose")], [#strong[c]lose current buffer]),
+    ..keyrow(cmd[bc!], [force #strong[c]lose\ #hint[(no save)]]),
     ..keyrow(cmd[q#hint("uit")], [#strong[q]uit current widow]),
-    ..keyrow(cmd[q!], [force-#strong[q]uit (no save)]),
-    ..keyrow([#mode[␣]?], [open *command* palette]),
+    ..keyrow(cmd[q!], [force-#strong[q]uit\ #hint[(no save)]]),
     ..keyrow(cmd[tutor], [open #strong[tutor]ial]),
-  )
-  
-  #table(
-    theader[Special key],
-    ..keyrow([⎋], [escape]),
-    ..keyrow([⌥], [option #hint[or] Alt]),
-    ..keyrow([^], [control]),
-    ..keyrow([⌘], [command]),
-    ..keyrow([␣], [space]),
-    ..keyrow([⇧], [shift#footnote[We don't use shift but its result, e.g. `⇧w` becomes `W`, `⇧/` becomes `?`]])
   )
   
   #table(
@@ -185,6 +183,49 @@
       [*window* mode ( #mode[␣w] works too )]
     ),
   )
+
+
+  #table(
+    theader[Pickers],
+    ..keyrow([#mode[␣]f\ #hint[␣F]], [open *file* picker (in workspace)\ #hint[open *file* picker (in current working directory)]], colspans: longdef),
+    ..keyrow([#mode[␣]/], [open full-text *search* picker (in workspace)], colspans: longdef),
+    ..keyrow([#mode[␣]b], [open *buﬀer* #hint[(tab)] picker], colspans: longdef),
+    ..keyrow([#mode[␣]j], [open *jump* picker], colspans: longdef),
+    ..keyrow([#mode[␣]s], [open *symbol* picker #needlsp], colspans: longdef),
+    ..keyrow([#mode[␣]?], [open *command* palette], colspans: longdef),
+  )
+
+  #needlsp requires an active language server for the file
+
+  #table(
+    theader[Look around],
+    ..keyrow([#mode[g]p], [#mode[g]oto #strong[p]rev buffer #hint[(tab)]]),
+    ..keyrow([#mode[g]n], [#mode[g]oto #strong[n]ext buffer #hint[(tab)]]),
+    ..keyrow([#mode[g]f], [#mode[g]oto #strong[f]ile under cursor]),
+    ..keyrow([#mode[g]d], [#mode[g]oto #strong[d]efinition #needlsp]),
+    ..keyrow([^o], [zoom #strong[o]ut\ #hint[(jump backward)]]),
+    ..keyrow([^i], [zoom #strong[i]n\ #hint[(jump forward)]]),
+  )
+
+  #table(
+    theader[Mess around],
+    ..keyrow([u], [#strong[u]ndo]),
+    ..keyrow([U], [redo]),
+    ..keyrow([<], [unindent]),
+    ..keyrow([>], [indent]),
+    ..keyrow([^c], [toggle *comment*]),
+  )
+
+  #table(
+    theader[Special key],
+    ..keyrow([⎋], [escape]),
+    ..keyrow([⌥], [option #hint[or] Alt]),
+    ..keyrow([^], [control]),
+    ..keyrow([⌘], [command]),
+    ..keyrow([␣], [space]),
+    ..keyrow([⇧], [shift#footnote[We don't use shift but its result, e.g. `⇧w` becomes `W`, `⇧/` becomes `?`]])
+  )
+  
 ]
 ])
 
@@ -203,13 +244,13 @@
     ],
   ..keyrow(
     mode[v],
-    [*extend* current selection to next movement , rather than _replacing_ it<v-mode>],
+    [*extend* current selection to next movement, rather than _replacing_ it<v-mode>],
     colspans: longdef,
     align: (center, left)
   ), 
   ..keyrow(
     sel[,],
-    [escape from *multi cursor #sel[selection]* (i.e. keep only primary selection)],
+    [escape from *#link(<multicursor>)[multi cursor] #sel[selection]*\ (i.e. keep only primary selection)],
     colspans: longdef,
     align: (center, left)
   ),
@@ -295,28 +336,34 @@
 
 #table(
   theader(colspan: 4)[#op[Operate] - enter *#mode[insert] mode* to edit],
-  herorow[In Helix, edit relative to #sel[selection], not cursor],
+  herorow[In Helix, insert point is relative to #sel[selection], not cursor.],
   herorow[
     #diagram(
-      arrow((0, -1), btt, fill: blue.lighten(95%),
+      arrow((0, -0.95), btt, fill: blue.lighten(95%),
           ([#op[O]], [#op[o]pen on prev line]),
       ),
-      arrow((0, 1), ttb, fill: blue.lighten(95%),
+      arrow((0, 0.95), ttb, fill: blue.lighten(95%),
           ([#op[o]], [#op[o]pen on next line]),
       ),
-      arrow((-0.97, 0), rtl, fill: blue.lighten(95%),
+      arrow((-0.95, 0), rtl, fill: blue.lighten(95%),
           ([#op[i]], [#op[i]nsert before selection]),
           ([#op[I]], [#op[i]nsert to end of\ line]),
       ),
-      arrow((0.97, 0), ltr, fill: blue.lighten(95%),
+      arrow((0.95, 0), ltr, fill: blue.lighten(95%),
           ([#op[a]], [#op[a]ppend to selection]),
           ([#op[A]], [#op[a]ppend to end of\ line]),
       ),
       node((0,0))[
         #stack(dir: ttb, spacing: 1%,
-          keydef([#op[c]], [#hint[yank and]\ #op[c]hange selection], dir: ltr),
-          keydef([#op[d]], [#hint[yank and]\ #op[d]elete selection], dir: ltr),
-          keydef([#hint[⌥]], [#hint[without yanking]], dir: ltr),
+          stack(dir: ltr, spacing: 1%,
+            keydef([#op[c]], [#hint[yank and]\ #op[c]hange selection], dir: ltr),
+            keydef([#hint[⌥c]], [#hint[no yanking]], dir: ltr),
+          ),
+          stack(dir: ltr, spacing: 1%,
+            keydef([#op[d]], [#hint[yank and]\ #op[d]elete selection], dir: ltr),
+            keydef([#hint[⌥d]], [#hint[no yanking]], dir: ltr),
+            // keydef([#hint[⌥]], [#hint[without yanking]], dir: ltr),
+          ),
         )
       ]
     )
@@ -324,20 +371,18 @@
 )
 
 #table(
-  theader(colspan: 4)[#op[Operate] - copy & pasting],
-  ..keyrow(op[y], [*#op[y]ank* selection (i.e. copy)]),
-  ..keyrow([#op[p]\ #hint[#op[P]]], [*paste after* selection\ #hint[*paste before* selection]]),
+  theader(colspan: 4)[#op[Operate] - yank (copy) & pasting],
+  ..keyrow(op[y], [*#op[y]ank* selections\ in Helix (see #link(<register>)[register])]),
+  ..keyrow([#op[p]\ #op[#hint[P]]], [*#op[p]aste* after/#hint[before] selection]),
+  ..keyrow([#mode[␣]#op[y]\ #op[#hint[␣Y]]], [*#op[y]ank* selections/#hint[primary selction] to clipboard]),
+  ..keyrow([#mode[␣]#op[p]\ #op[#hint[␣P]]], [*paste* from clipboard\ after/#hint[before] selection]),
 )
-
 
 #colbreak()
 
 #layout(size => [
   #set align(right)
   #block(width: 85% * size.width)[
-
-  #let needlsp=text(fill: green)[●]
-  #let needtree=text(fill: maroon)[●]
   
   #table(
     theader(colspan: 4)[#sel[Select] to semantic (#link("https://github.com/tpope/vim-unimpaired")[unimpaired] style) <unimpaired>],
@@ -359,13 +404,13 @@
     ..keyrow([ #mov[\[]#sem[x]], [prev #sem[x]]),
     ..keyrow([ #mov[\]]#sem[x]], [next #sem[x]]),
     herorow[where #sem[x] could be],
-    ..keyrow([#sem[g]\ #sem[G]], [chan#sem[g]e\ #hint[first/last chan#sem[G]e]]),
-    ..keyrow([#sem[d]\ #sem[D]], [#sem[d]iagnostic\ #hint[first/last #sem[D]iagnostic] #needlsp]),
+    ..keyrow([#sem[g]\ #sem[#hint[G]]], [chan#sem[g]e\ #hint[first/last chan#strong[g]e]]),
+    ..keyrow([#sem[d]\ #sem[#hint[D]]], [#sem[d]iagnostic #needlsp\ #hint[first/last #strong[d]iagnostic] ]),
     ..keyrow([#sem[␣]], [create new line above/below]),
     [],[],
   )
   
-  #needlsp requires an active language server for the file
+    #needlsp requires an active language server for the file
 
     #table(
       theader(colspan: 4)[#sel[Select] inside/around #pair[pair] (#link("https://github.com/tpope/vim-surround")[surround] style) <surround>],
@@ -373,22 +418,29 @@
       ..keyrow([#mode[m]a#pair[x]], [select #strong[a]round\ pair #pair[x]]),
       herorow[where #pair[x] could be],
       ..keyrow(text(font: "Fira Code")[\( \) \[ \] \{ \} \' \"], [any characters acting as a pair],
-        colspans: (2, 2),
+        colspans: evendef,
       ),
       ..keyrow([#pair[m]], [nearest pair of the above],
-        colspans: (2, 2),
+        colspans: evendef,
       ),
       ..keyrow([#sem[f] #sem[t] #sem[a] #sem[c] #sem[p] #sem[T]], [same as in #link(<unimpaired>)[#sel[Select] to semantic]],
-        colspans: (2, 2),
+        colspans: evendef,
       ),
-      ..keyrow([#sel[w]\ #sel[W]], [#sel[w]ord\ #hint[#sel[W]ord]],
-        colspans: (2, 2),
+      ..keyrow([#sel[w]\ #hint[W]], [#sel[w]ord\ #hint[#strong[W]ORD]],
+        colspans: evendef,
       ),
     )
   ]
 ])
 
+
+// TODO
+
+<register>
+
 #colbreak()
+
+<multicursor>
 
 #layout(size => [
   #set align(right)
