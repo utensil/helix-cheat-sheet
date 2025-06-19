@@ -10,11 +10,11 @@ The idea is to first work out a _mini_ version, which covers essentials, then po
 
 ## Style choice
 
-- 👀 discoverable: easy to see or search for frequently wondered stuff
+- 👀 discoverable: easy to notice or search for frequently wondered stuff
 - 🎨 consistently colorful: use colors to distinguish concepts
 - 💡 memorable keystrokes: try to relate keystrokes to meaning
 - 🧭 spatially intuitive: visualize which direction it goes
-- ✂️ concise: no articles for words, short words and descriptions, link to elaboration
+- ✂️ concise: short words and descriptions(prefer verb, no articles for nouns), internally link to elaboration
 - 📦 self-contained: assumes less of audience
 
 ## Credits
@@ -23,7 +23,9 @@ This work is inspired by Steve Hoy's [Helix Cheat Sheet v1.1](https://github.com
 
 I love its overall layout and many ideas, but somehow feel certain parts do not fit in my mindset, so I wish to play around with it, yet it has no source but a PDF.
 
-I'm gradually piecing together a cheat sheet in Typst, with ideas sparked by Steve Hoy's work. Hopefully, this is also useful for others to learn and play around.
+I'm gradually piecing together a cheat sheet in Typst, with ideas sparked by Steve Hoy's work. I've made corrections and supplements, according to other sources and verified by interactions with Helix.
+
+Hopefully, this is also useful for others to learn and play with.
 
 ## License
 
