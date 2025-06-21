@@ -30,7 +30,9 @@
   margin: 0.5cm,
 )
 
-#set text(font: "Fira Sans", size: 11pt)
+#let base-text = 11pt
+#let small-text = 5pt
+#set text(font: "Fira Sans", size: base-text)
 #show math.equation: set text(font: "Fira Math")
 #show raw: set text(font: "Fira Code", size: 10pt)
 
@@ -41,7 +43,7 @@
 
 #show: cram-snap.with(
   title: [*Helix Cheat Sheet*],
-  subtitle: [mini v0.3], // A Post-Modern Text Editor
+  subtitle: [mini v0.4], // A Post-Modern Text Editor
   icon: image("helix-logo.svg"),
   column-number: 4,
   // fill-color: rgb("#947cc3").lighten(85%)  // helix brand color: blue 99dbe8 purple 947cc3
@@ -72,16 +74,17 @@
   )
 )
 
-#let keydef(key, def, dir: ltr)=(
-  return stack(dir: dir, spacing: 1%,
-    box(align(center + horizon, text(size: 2em, weight: "bold", key)), inset: 2%),
-    box(height: 3em, width: 3.5em, align(center + horizon, text(size: 0.7em, def)), inset: 1%),
+#let keydef(key, def, dir: ltr, size: base-text)=[
+  #set text(size: size)
+  #stack(dir: dir, spacing: 1pt,
+    box(align(center + horizon, text(size: 2em, weight: "bold", key)), inset: 0pt),
+    box(height: 3em, width: 3.5em, align(center + horizon, text(size: 0.7em, def)), inset: 0pt),
   )
-)
+]
 
-#let arrow(pos, dir, ..keydefs, fill: rgb("947cc3").lighten(80%))=(
-  node(pos, stack(dir: dir, spacing: 1%, ..(
-    keydefs.pos().map(kd => { keydef(kd.first(), kd.last(), dir: dir)})
+#let arrow(pos, dir, ..keydefs, fill: rgb("947cc3").lighten(80%), size: base-text)=(
+  node(pos, stack(dir: dir, spacing: 1pt, ..(
+    keydefs.pos().map(kd => { keydef(kd.first(), kd.last(), dir: dir, size: size)})
   )), fill: fill, extrude: (0.7em,0.7em), shape: fletcher.shapes.chevron.with(dir: dir.end()))
 )
 
@@ -109,11 +112,11 @@
   #table(
     theader[Basic],
     ..keyrow([Install], [ #link("https://docs.helix-editor.com/package-managers.html")[with package managers] or #link("https://docs.helix-editor.com/building-from-source.html")[from source]], colspans: (1, 3)),
-    ..keyrow([#hint("$") *hx*], [open current directory in Helix], colspans: evendef),
+    ..keyrow([#hint("$") *hx*], [open current directory in Helix], colspans: evendef), // \ #hint[as a workspace]
     ..keyrow([#hint("$") *hx* #arg[file]], [open #arg[file] in Helix], colspans: evendef),
     herorow[#hint[buffer = opened file, shown as *tabs*]],
     ..keyrow(cmd[n#hint("ew")], [create a #strong[n]ew buffer]),
-    ..keyrow(cmd[w#hint("rite")], [#strong[w]rite/save buffer\ to disk]),
+    ..keyrow(cmd[w#hint("rite")], [#strong[w]rite buffer to disk\ #hint[(save file)]]),
     ..keyrow(cmd[bc#hint("lose")], [#strong[c]lose current buffer]),
     ..keyrow(cmd[bc!], [force #strong[c]lose\ #hint[(no save)]]),
     ..keyrow(cmd[q#hint("uit")], [#strong[q]uit current widow]),
@@ -192,8 +195,7 @@
 
   #table(
     theader[Pick],
-    ..keyrow([#mode[␣]f\ #hint[␣F]], [open *file* picker (in workspace)\ #hint[open *file* picker (in current directory)]], colspans: longdef),
-    ..keyrow([#mode[␣]/], [open full-text *search* picker (in workspace)], colspans: longdef),
+    ..keyrow([#mode[␣]f\ #hint[␣F]], [open *file* picker in workspace/#hint[current directory]], colspans: longdef),
     ..keyrow([#mode[␣]b], [open *buﬀer* #hint[(tab)] picker], colspans: longdef),
     ..keyrow([#mode[␣]j], [open *jump* picker], colspans: longdef),
     ..keyrow([#mode[␣]s], [open *symbol* picker #needlsp], colspans: longdef),
@@ -207,6 +209,8 @@
     ..keyrow([n], [#strong[n]ext match]),
     ..keyrow([\*], [search for current #sel[selection]\ #hint[(e.g. \*n for next match)]], colspans: evendef, align: (center, left)),
     ..keyrow([s#hint[\<regex\>]↵c#hint[\<replacement\>]], [replace #hint[\<regex\>] with #hint[\<replacement\>] in #sel[selection] #fn[#fn-replace] \ #hint[(e.g. % to select the whole file)]], colspans: evendef, align: (center, left)),
+    ..keyrow([#mode[␣]/#hint[\<regex\>]↵], [search for  #hint[\<regex\>]  in workspace], colspans: evendef, align: (center, left)),
+    ..keyrow([#text(weight: "regular")[#link("https://github.com/chmln/sd")[sd] (CLI) #link("https://github.com/thomasschafer/scooter?tab=readme-ov-file#helix")[scooter] (TUI)]], [search & replace in workspace], colspans: evendef, align: (center, left)),
   )
 
   #fn-replace see #link(<multicursor>)[Multi-cursor #sel[#strong[s]elect]] in and #op[c]hange in #link(<operate>)[Operate].
@@ -268,7 +272,7 @@
   ),
   ..keyrow(
     sel[x],
-    [select *current line* (repeatable)],
+    [select *current line* #hint[(repeatable)]],
     align: (center, left)
   ),
   ..keyrow(
@@ -276,12 +280,14 @@
     [select *entire file*],
     align: (center, left)
   ),
-  herorow[#diagram(
+  herorow[
+    // #set text(size: 11pt)
+    #diagram(
       arrow((0, -1), btt,
           ([#mov[k]#pin("k")], [prev line]),
           ([#mode[g]#mov[g]], [first line])
       ),
-      node((-0.5,-1.1), [
+      node((0.5,-1.1), [
         #cnt[n]#mode[g]#mov[g] #hint[or] #cnt[n]#mov[G] #hint[or] #cmd[#cnt[n]]\
         jump to line #cnt[n]
       ]),
@@ -314,7 +320,7 @@
       arrow((0.7, 1.2), ltr, fill: gray.lighten(80%),
           ([#sel[\]]#sem[x]], [select to next #link(<unimpaired>)[semantic] #sem[x]]),
       ),
-      arrow((-0.25 + 0.7, 2 - 2.6), rtl, fill: gray.lighten(80%),
+      arrow((-0.22 + 0.7, 2 - 2.6), rtl, fill: gray.lighten(80%),
           ([ ], [ ]),
       ),
       arrow((0 + 0.7, 2 - 2.6), ltr, fill: gray.lighten(80%),
@@ -323,9 +329,19 @@
       arrow((0.6 + 0.7, 2 - 2.6), ltr, fill: gray.lighten(80%),
           ([#mode[m]a#pair[x]], [select #strong[a]round\ #link(<surround>)[pair] #pair[x]]),
       ),
-      
+      arrow((0.7 - 1.3, 2 - 2.6 - 0.5), ttb, fill: gray.lighten(80%), size: small-text,
+          ([ ], [ ]),
+      ),
+      arrow((0.7 - 1.3, 2 - 2.6 - 0.7), btt, fill: gray.lighten(80%), size: small-text,
+          ([⌃u], [move ½ page #strong[u]p]),
+          ([⌃b], [move page up (#strong[b]ack)]),
+      ),
+      arrow((0.7 - 1.3, 2 - 2.6 - 0.1), ttb, fill: gray.lighten(80%), size: small-text,
+          ([⌃d], [move ½ page #strong[d]own]),
+          ([⌃f], [move page down (#strong[f]orward)])
+      ),
       node((0,0))[
-        #pin("H")#kbd("H")#pin("J")#kbd("J")#pin("K")#kbd("K")#pin("L")#kbd("L")#fn[#fn-hjkl]<move>
+  #pin("H")#kbd("H")#pin("J")#kbd("J")#pin("K")#kbd("K")#pin("L")#kbd("L")#fn[#fn-hjkl]<move>
       ]
     )
   ]
